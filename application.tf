@@ -184,31 +184,25 @@ resource "aws_lb_listener" "http" {
 # ------------------------------------------------------------------------------
 
 resource "aws_autoscaling_group" "asg" {
-  name                = "${local.prefix}-asg"
-  desired_capacity    = 2
-  min_size            = 1
-  max_size            = 2
-  vpc_zone_identifier = data.aws_subnets.public.ids
+  name                = "cmtr-8k07hv2y-asg"
+  vpc_zone_identifier = data.aws_subnets.private.ids
+  target_group_arns   = [aws_lb_target_group.target_group.arn]
+
+  min_size         = 2
+  max_size         = 2
+  desired_capacity = 2
 
   launch_template {
     id      = aws_launch_template.template.id
     version = "$Latest"
   }
 
+  # --- ADD THIS BLOCK ---
   lifecycle {
     ignore_changes = [
-      load_balancers,
-      target_group_arns,
+      desired_capacity,
+      target_group_arns
     ]
-  }
-
-  dynamic "tag" {
-    for_each = var.tags
-    content {
-      key                 = tag.key
-      value               = tag.value
-      propagate_at_launch = true
-    }
   }
 }
 
