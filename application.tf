@@ -84,10 +84,10 @@ resource "aws_launch_template" "template" {
     arn = data.aws_iam_instance_profile.profile.arn
   }
 
-  network_interfaces {
-    associate_public_ip_address = false
+network_interfaces {
+    associate_public_ip_address = true
     delete_on_termination       = true
-    security_groups = [
+    security_groups             = [
       data.aws_security_group.ec2_sg.id,
       data.aws_security_group.http_sg.id
     ]
@@ -100,7 +100,6 @@ resource "aws_launch_template" "template" {
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              dnf update -y
               dnf install -y httpd jq
               systemctl enable httpd
               systemctl start httpd
@@ -189,7 +188,7 @@ resource "aws_autoscaling_group" "asg" {
   desired_capacity    = 2
   min_size            = 1
   max_size            = 2
-  vpc_zone_identifier = data.aws_subnets.private.ids
+  vpc_zone_identifier = data.aws_subnets.public.ids
 
   launch_template {
     id      = aws_launch_template.template.id
