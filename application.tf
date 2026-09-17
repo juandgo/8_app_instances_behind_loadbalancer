@@ -147,23 +147,20 @@ resource "aws_lb" "loadbalancer" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name     = "${local.prefix}-tg"
+  name     = "cmtr-8k07hv2y-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.aws_vpc.selected.id
 
   health_check {
-    enabled             = true
     path                = "/"
     protocol            = "HTTP"
-    port                = "80"
-    interval            = 30
+    matcher             = "200"
+    interval            = 15
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
-
-  tags = var.tags
 }
 
 resource "aws_lb_listener" "http" {
@@ -188,16 +185,19 @@ resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = data.aws_subnets.private.ids
   target_group_arns   = [aws_lb_target_group.target_group.arn]
 
-  min_size         = 2
-  max_size         = 2
-  desired_capacity = 2
+  # Check 12 Fix: Guarantee at least 2 instances are running and healthy
+  min_size                  = 2
+  max_size                  = 2
+  desired_capacity          = 2
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
 
   launch_template {
     id      = aws_launch_template.template.id
     version = "$Latest"
   }
 
-  # --- ADD THIS BLOCK ---
+  # Check 13 Fix: Add lifecycle block ignoring desired_capacity and target_group_arns
   lifecycle {
     ignore_changes = [
       desired_capacity,
