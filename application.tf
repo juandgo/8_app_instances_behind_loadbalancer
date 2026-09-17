@@ -185,7 +185,7 @@ resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = data.aws_subnets.private.ids
   target_group_arns   = [aws_lb_target_group.target_group.arn]
 
-  # Check 12 Fixes: Launch at least 2 instances with ELB health checking
+  # Fix for Check 12: Ensure at least 2 instances run and report healthy via ELB
   min_size                  = 2
   max_size                  = 2
   desired_capacity          = 2
@@ -197,7 +197,7 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
-  # Check 13 Fixes: Prevent Terraform from overriding scaling or attachment states
+  # Fix for Check 13: Prevent Terraform from resetting runtime changes
   lifecycle {
     ignore_changes = [
       desired_capacity,
