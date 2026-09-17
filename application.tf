@@ -84,10 +84,10 @@ resource "aws_launch_template" "template" {
     arn = data.aws_iam_instance_profile.profile.arn
   }
 
-network_interfaces {
+  network_interfaces {
     associate_public_ip_address = true
     delete_on_termination       = true
-    security_groups             = [
+    security_groups = [
       data.aws_security_group.ec2_sg.id,
       data.aws_security_group.http_sg.id
     ]
