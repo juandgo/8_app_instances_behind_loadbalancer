@@ -153,13 +153,15 @@ resource "aws_lb_target_group" "target_group" {
   vpc_id   = data.aws_vpc.selected.id
 
   health_check {
+    enabled             = true
     path                = "/"
+    port                = "80"
     protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 15
-    timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 15
+    matcher             = "200"
   }
 }
 
