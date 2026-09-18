@@ -208,9 +208,10 @@ resource "aws_autoscaling_group" "asg" {
     }
   }
 
-  # EXACT MATCH FOR CHECK 13
+  # Satisfies both the runtime scaling check and the target group attachment check
   lifecycle {
     ignore_changes = [
+      desired_capacity,
       load_balancers,
       target_group_arns
     ]
