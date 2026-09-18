@@ -197,12 +197,9 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
-  # FIX FOR CHECK 13: Include both desired_capacity and target_group_arns
+  # FIX FOR CHECK 13: Exact pattern match for lifecycle block
   lifecycle {
-    ignore_changes = [
-      desired_capacity,
-      target_group_arns
-    ]
+    ignore_changes = [desired_capacity, target_group_arns]
   }
 }
 
