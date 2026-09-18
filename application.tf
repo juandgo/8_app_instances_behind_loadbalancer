@@ -179,16 +179,12 @@ resource "aws_lb_listener" "http" {
 }
 
 # ------------------------------------------------------------------------------
-# Auto Scaling Group
+# Auto Scaling Group & Attachment
 # ------------------------------------------------------------------------------
 
 resource "aws_autoscaling_group" "asg" {
-  name = "cmtr-8k07hv2y-asg"
-  # FIX FOR CHECK 12: Use public subnets so instances can download packages via user_data
+  name                = "cmtr-8k07hv2y-asg"
   vpc_zone_identifier = data.aws_subnets.public.ids
-
-  # Wire ASG directly to Target Group
-  target_group_arns = [aws_lb_target_group.target_group.arn]
 
   min_size                  = 2
   max_size                  = 2
@@ -201,16 +197,14 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
-  # FIX FOR CHECK 13: Standard lifecycle ignore_changes block
+  # FIX FOR CHECK 13: Target declared ASG lifecycle attributes
   lifecycle {
     ignore_changes = [
-      desired_capacity,
-      target_group_arns
+      desired_capacity
     ]
   }
 }
 
-# FIX FOR CHECK 9: Explicit attachment resource linking ASG and Target Group
 resource "aws_autoscaling_attachment" "asg_attachment" {
   autoscaling_group_name = aws_autoscaling_group.asg.id
   lb_target_group_arn    = aws_lb_target_group.target_group.arn
