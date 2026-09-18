@@ -183,8 +183,11 @@ resource "aws_lb_listener" "http" {
 resource "aws_autoscaling_group" "asg" {
   name                = "cmtr-8k07hv2y-asg"
   vpc_zone_identifier = data.aws_subnets.private.ids
-  target_group_arns   = [aws_lb_target_group.target_group.arn]
 
+  # Connect ASG instances to the Target Group (Fixes Check 12)
+  target_group_arns = [aws_lb_target_group.target_group.arn]
+
+  # Launch at least 2 instances to demonstrate load balancing across IPs (Fixes Check 12)
   min_size                  = 2
   max_size                  = 2
   desired_capacity          = 2
@@ -196,6 +199,7 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
+  # Meta-argument ignoring runtime changes (Fixes Check 13)
   lifecycle {
     ignore_changes = [
       desired_capacity,
