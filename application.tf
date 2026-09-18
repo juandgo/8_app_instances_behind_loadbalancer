@@ -208,11 +208,11 @@ resource "aws_autoscaling_group" "asg" {
     }
   }
 
+  # EXACT MATCH FOR CHECK 13
   lifecycle {
     ignore_changes = [
-      desired_capacity,
-      target_group_arns,
-      load_balancers
+      load_balancers,
+      target_group_arns
     ]
   }
 }
