@@ -210,8 +210,9 @@ resource "aws_autoscaling_group" "asg" {
 
   lifecycle {
     ignore_changes = [
-      load_balancers,
-      target_group_arns
+      desired_capacity,
+      target_group_arns,
+      load_balancers
     ]
   }
 }
