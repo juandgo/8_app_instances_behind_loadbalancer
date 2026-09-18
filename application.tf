@@ -185,7 +185,7 @@ resource "aws_lb_listener" "http" {
 # ------------------------------------------------------------------------------
 
 resource "aws_autoscaling_group" "asg" {
-  name                = "${local.prefix}-asg"
+  name                = "cmtr-8k07hv2y-asg"
   vpc_zone_identifier = data.aws_subnets.public.ids
 
   min_size                  = 1
@@ -215,9 +215,4 @@ resource "aws_autoscaling_group" "asg" {
       target_group_arns
     ]
   }
-}
-
-resource "aws_autoscaling_attachment" "asg_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.asg.id
-  lb_target_group_arn    = aws_lb_target_group.target_group.arn
 }
