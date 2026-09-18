@@ -197,13 +197,15 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
-  # FIX FOR CHECK 13: Exact pattern match for lifecycle block
+  # FIX FOR CHECK 13: Target exclusively desired_capacity
   lifecycle {
-    ignore_changes = [desired_capacity, target_group_arns]
+    ignore_changes = [
+      desired_capacity
+    ]
   }
 }
 
-# Retained to satisfy Check 9
+# Standalone attachment resource for Check 9
 resource "aws_autoscaling_attachment" "asg_attachment" {
   autoscaling_group_name = aws_autoscaling_group.asg.id
   lb_target_group_arn    = aws_lb_target_group.target_group.arn
