@@ -183,9 +183,8 @@ resource "aws_lb_listener" "http" {
 # ------------------------------------------------------------------------------
 
 resource "aws_autoscaling_group" "asg" {
-  name                = "cmtr-8k07hv2y-asg"
+  name                = "${local.prefix}-asg"
   vpc_zone_identifier = data.aws_subnets.public.ids
-  target_group_arns   = [aws_lb_target_group.target_group.arn]
 
   min_size                  = 2
   max_size                  = 2
@@ -198,16 +197,15 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
-  # Check 13 exact validation match
+  # Correct lifecycle configuration
   lifecycle {
     ignore_changes = [
-      desired_capacity,
-      target_group_arns
+      desired_capacity
     ]
   }
 }
 
-# Retained to satisfy Check 9
+# Attach target group separately
 resource "aws_autoscaling_attachment" "asg_attachment" {
   autoscaling_group_name = aws_autoscaling_group.asg.id
   lb_target_group_arn    = aws_lb_target_group.target_group.arn
